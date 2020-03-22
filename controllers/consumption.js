@@ -19,23 +19,31 @@ sheetsRouter.get("/", async (request, response) => {
   await document.loadInfo();
 
   const sheet = await document.sheetsByIndex[0];
-  const rows = await sheet.getRows({
-    offset: 0
+  const rows = await sheet.getRows({ offset: 0 });
+
+  const sheetHeaders = sheet.headerValues;
+
+  console.log("rows", rows);
+  console.log("Headers length:" + sheetHeaders.length);
+
+  const rowData = new Array(rows.length);
+
+  for (var i = 0; i < rowData.length; i++) {
+    rowData[i] = new Array(sheetHeaders.length);
+  }
+
+  console.log("RowCount:" + sheet.rowCount);
+
+  await rows.forEach((row, i) => {
+    for (let j = 0; j < sheetHeaders.length; j++) {
+      console.log(row[sheetHeaders[j]]);
+      rowData[i].splice(j, 1, row[sheetHeaders[j]]);
+    }
   });
 
-  const consumables = [];
+  const sheetData = { headers: sheetHeaders, rows: rowData };
 
-  rows.forEach(row => {
-    consumables.push({
-      tuote: row.tuote,
-      yksikkö: row.yksikkö,
-      co2: row.co2,
-      määrä: row.määrä,
-      kategoria: row.kategoria
-    });
-  });
-
-  return response.json(consumables);
+  return response.json(sheetData);
 });
 
 module.exports = sheetsRouter;
