@@ -36,7 +36,6 @@ sheetsRouter.get("/", async (request, response) => {
 
   await rows.forEach((row, i) => {
     for (let j = 0; j < sheetHeaders.length; j++) {
-      console.log(row[sheetHeaders[j]]);
       rowData[i].splice(j, 1, row[sheetHeaders[j]]);
     }
   });
