@@ -9,5 +9,5 @@ app.use("/api/sheets/", sheetsRouter);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
-  console.log(`Serveri juoksee portissa ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

@@ -1,11 +1,35 @@
 require("dotenv").config();
 const sheetsRouter = require("express").Router();
+
 const { GoogleSpreadsheet } = require("google-spreadsheet");
+const bodyParser = require("body-parser");
 
 const credentials = require("../client_secret.json");
 
+sheetsRouter.use(bodyParser.json());
+sheetsRouter.use(bodyParser.urlencoded({ extended: true }));
+
 sheetsRouter.post("/", async (request, response, next) => {
-  return null;
+  const document = await new GoogleSpreadsheet(process.env.SPREADSHEET_ID);
+
+  const data = request.body;
+
+  //
+
+  console.log(data);
+
+  await document.useServiceAccountAuth({
+    client_email: credentials.client_email,
+    private_key: credentials.private_key
+  });
+
+  await document.loadInfo();
+
+  const sheet = await document.sheetsByIndex[0];
+
+  await sheet.addRow(data);
+
+  return response.status(200).send();
 });
 
 sheetsRouter.get("/", async (request, response) => {
@@ -42,7 +66,7 @@ sheetsRouter.get("/", async (request, response) => {
 
   const sheetData = { headers: sheetHeaders, rows: rowData };
 
-  return response.json(sheetData);
+  return response.status(200).json(sheetData);
 });
 
 module.exports = sheetsRouter;
